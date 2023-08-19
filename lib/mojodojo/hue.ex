@@ -1,7 +1,9 @@
 defmodule Mojodojo.Hue do
   @moduledoc """
   For managing my smart lights (currently just two light strips connected to a
-    Philips Hue bridge)
+    Philips Hue bridge).
+
+  Deprecated so I can instead use Home Assistant's api.
   """
 
   @spec discover_ip :: %{id: bitstring(), ip: bitstring()}

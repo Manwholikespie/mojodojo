@@ -15,7 +15,7 @@ defmodule Mojodojo.Flux do
 
   @impl true
   def init(_args) do
-    Lights.turn_on("light.den_0")
+    Lights.turn_off("light.den_0")
     Lights.turn_on("light.den_1")
 
     state = %{counter: 0}
@@ -80,5 +80,10 @@ defmodule Mojodojo.Flux do
     Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
     2000
+  end
+
+  defp ticker(%{"rising" => true}) do
+    Lights.set_rgb("light.den_1", 255, 0, 0)
+    Lights.set_brightness("light.den_1", 200)
   end
 end

@@ -1,7 +1,8 @@
 defmodule Mojodojo.Lights do
   alias Mojodojo.HomeAssistant, as: HA
 
-  def set_rgb(entity_id, r, g, b) do
+  def set_rgb(entity_id, r, g, b)
+      when r >= 0 and r <= 255 and g >= 0 and g <= 255 and b >= 0 and b <= 255 do
     HA.set_domain_service("light", "turn_on", %{
       "entity_id" => entity_id,
       "rgb_color" => [r, g, b]
@@ -35,5 +36,10 @@ defmodule Mojodojo.Lights do
   @spec turn_on(bitstring()) :: map()
   def turn_on(entity_id) do
     HA.set_domain_service("light", "turn_on", %{"entity_id" => entity_id})
+  end
+
+  @spec turn_off(bitstring()) :: map()
+  def turn_off(entity_id) do
+    HA.set_domain_service("light", "turn_off", %{"entity_id" => entity_id})
   end
 end
