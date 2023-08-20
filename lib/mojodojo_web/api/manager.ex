@@ -3,15 +3,19 @@ defmodule MojodojoWeb.API.Manager do
 
   require Logger
 
-  alias Mojodojo.Lights
   alias Mojodojo.Flux
 
-  def toggle_light(conn, %{"entity_id" => entity_id}) do
-    res = Lights.turn_off(entity_id)
+  def flux_post(conn, %{"entity_id" => _entity_id, "service" => "turn_on"}) do
+    res = Flux.turn_on()
     json(conn, res)
   end
 
-  def state(conn, _data) do
+  def flux_post(conn, %{"entity_id" => _entity_id, "service" => "turn_off"}) do
+    res = Flux.turn_off()
+    json(conn, res)
+  end
+
+  def flux_get(conn, _data) do
     Logger.debug(conn |> inspect(pretty: true))
     json(conn, %{is_active: Flux.is_active?()})
   end

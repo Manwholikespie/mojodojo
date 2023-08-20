@@ -9,7 +9,7 @@ defmodule MojodojoWeb.Router do
   scope "/api", MojodojoWeb do
     pipe_through :api
 
-    get "/v1/state", API.Manager, :state
-    post "/v1/toggle_light", API.Manager, :toggle_light
+    get "/v1/flux", API.Manager, :flux_get
+    post "/v1/flux", API.Manager, :flux_post
   end
 end

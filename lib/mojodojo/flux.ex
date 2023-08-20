@@ -40,6 +40,16 @@ defmodule Mojodojo.Flux do
   end
 
   @impl true
+  def handle_call(:turn_on, _from, state) do
+    {:reply, true, %{state | active: true}}
+  end
+
+  @impl true
+  def handle_call(:turn_off, _from, state) do
+    {:reply, false, %{state | active: false}}
+  end
+
+  @impl true
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
@@ -51,6 +61,14 @@ defmodule Mojodojo.Flux do
 
   def toggle() do
     GenServer.call(__MODULE__, :toggle)
+  end
+
+  def turn_on() do
+    GenServer.call(__MODULE__, :turn_on)
+  end
+
+  def turn_off() do
+    GenServer.call(__MODULE__, :turn_off)
   end
 
   def is_active?() do
