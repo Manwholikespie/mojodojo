@@ -3,7 +3,7 @@ defmodule MojodojoWeb.AuthPlug do
 
   require Logger
 
-  @api_key Application.compile_env(:mojodojo, :api_key) |> String.downcase()
+  @api_key Application.compile_env(:mojodojo, :api_key)
 
   def init(opts), do: opts
 

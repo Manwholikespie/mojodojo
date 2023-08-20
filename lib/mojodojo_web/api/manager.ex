@@ -5,12 +5,12 @@ defmodule MojodojoWeb.API.Manager do
 
   alias Mojodojo.Flux
 
-  def flux_post(conn, %{"entity_id" => _entity_id, "service" => "turn_on"}) do
+  def flux_post(conn, %{"service" => "turn_on"}) do
     res = Flux.turn_on()
     json(conn, res)
   end
 
-  def flux_post(conn, %{"entity_id" => _entity_id, "service" => "turn_off"}) do
+  def flux_post(conn, %{"service" => "turn_off"}) do
     res = Flux.turn_off()
     json(conn, res)
   end

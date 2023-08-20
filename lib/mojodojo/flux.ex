@@ -55,8 +55,8 @@ defmodule Mojodojo.Flux do
   end
 
   defp tick(_state) do
-    _new_kelvin = swag()
-    # Logger.debug("Light temp: #{new_kelvin}")
+    new_kelvin = swag()
+    Logger.debug("Light temp: #{new_kelvin}")
   end
 
   def toggle() do
@@ -110,6 +110,8 @@ defmodule Mojodojo.Flux do
   end
 
   defp ticker(%{} = sun_val) when map_size(sun_val) == 0 do
+    Logger.debug("Not getting sun value")
+    -1
   end
 
   # Past noon, not yet close to dawn. Set to default noonish temp of 6500K
@@ -117,6 +119,7 @@ defmodule Mojodojo.Flux do
     Lights.set_kelvin("light.den_1", 6500)
     Lights.set_brightness("light.den_1", 255)
     Lights.set_brightness("light.den_0", 255)
+    6500
   end
 
   # Starting 3 hours from dusk (up until 1 hour), transition from 4500K to 3000K
@@ -134,6 +137,7 @@ defmodule Mojodojo.Flux do
     p = nd / 60
     k = 2000 + trunc(1000 * p)
     Lights.set_kelvin("light.den_1", k)
+    Lights.set_brightness("light.den_0", 0)
     k
   end
 
@@ -142,26 +146,28 @@ defmodule Mojodojo.Flux do
     p = nm / 60
     Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
+    Lights.set_brightness("light.den_0", 0)
     2000
   end
 
-  # The hour leading up until dawn. Transition from red to 2500k.
-  defp ticker(%{"rising" => true, "next_dawn" => nd}) when nd < 60 do
-    p = 1.0 - nd / 60
+  # The hour leading up until "dawn". Transition from red to 2000.
+  defp ticker(%{"rising" => true, "next_rising" => nr}) when nr < 60 do
+    p = 1.0 - (nr / 60)
     Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
+    Lights.set_brightness("light.den_0", 0)
     2500
   end
 
-  # From dawn until noon. Linear transition from 2500K to 6500K at noon.
-  defp ticker(%{"rising" => true, "next_dawn" => nd, "next_noon" => nn}) when nd > nn do
+  # From dawn until noon. Linear transition from 2000K to 6500K at noon.
+  defp ticker(%{"rising" => true, "next_rising" => nr, "next_noon" => nn}) when nr > nn do
     # linearly across 5 hours til noon
     p = 1.0 - min(5, nn / 60) / 5
-    k = 2500 + trunc(4000 * p)
+    k = 2000 + trunc(4500 * p)
     Lights.set_kelvin("light.den_1", k)
     Lights.set_brightness("light.den_1", 255)
     Lights.set_brightness("light.den_0", trunc(255 * p))
-    # Logger.debug("p = #{p}, k = #{k}")
+    k
   end
 
   defp ticker(%{"rising" => true} = sun) do
