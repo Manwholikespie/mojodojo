@@ -78,6 +78,10 @@ defmodule Mojodojo.Flux do
 
   def sun() do
     ss = HA.states("sun.sun")
+    sun_helper(ss)
+  end
+
+  defp sun_helper(%{"attributes" => _} = ss) when is_map(ss) do
     now = DateTime.utc_now()
 
     attributes =
@@ -95,9 +99,17 @@ defmodule Mojodojo.Flux do
     Map.new(attributes)
   end
 
+  # If HA is down, we get an empty map. Just pass it along and don't process.
+  # There is also a possibility we get %{"message" => "Entity not found."} on
+  #   startup. Ignore.
+  defp sun_helper(_), do: %{}
+
   def swag() do
     sun()
     |> ticker()
+  end
+
+  defp ticker(%{} = sun_val) when map_size(sun_val) == 0 do
   end
 
   # Past noon, not yet close to dawn. Set to default noonish temp of 6500K

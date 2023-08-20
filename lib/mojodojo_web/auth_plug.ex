@@ -1,11 +1,15 @@
 defmodule MojodojoWeb.AuthPlug do
   import Plug.Conn
 
+  require Logger
+
   @api_key Application.compile_env(:mojodojo, :api_key) |> String.downcase()
 
   def init(opts), do: opts
 
   def call(conn, _opts) do
+    Logger.info(conn)
+
     case get_req_header(conn, "authorization") do
       ["Bearer " <> token] ->
         case verify_token(token) do

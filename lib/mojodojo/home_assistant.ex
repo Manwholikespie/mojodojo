@@ -1,4 +1,6 @@
 defmodule Mojodojo.HomeAssistant do
+  require Logger
+
   @ha_key Application.compile_env(:mojodojo, :ha_key)
   @ha_endpoint Application.compile_env(:mojodojo, :ha_endpoint)
 
@@ -38,7 +40,15 @@ defmodule Mojodojo.HomeAssistant do
       Req.Request.new(method: method, url: endpoint, headers: headers_kw(), body: body)
       |> Req.Request.append_response_steps(decompress_body: fn x -> x end)
 
-    {_req, resp} = Req.Request.run_request(req)
-    Jason.decode!(resp.body)
+    with {_req, %Req.Response{body: b}} <- Req.Request.run_request(req) do
+      helper_make_request(Jason.decode(b))
+    else
+      {_req, exception} ->
+        Logger.error("Home Assistant request failed: #{exception |> inspect()}")
+        %{}
+    end
   end
+
+  defp helper_make_request({:ok, json}), do: json
+  defp helper_make_request({:error, _e}), do: %{}
 end
