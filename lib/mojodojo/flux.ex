@@ -114,33 +114,26 @@ defmodule Mojodojo.Flux do
     -1
   end
 
-  # Past noon, not yet close to dawn. Set to default noonish temp of 6500K
-  defp ticker(%{"rising" => false, "next_dusk" => nd}) when nd >= 180 do
-    Lights.set_kelvin("light.den_1", 6500)
-    Lights.set_brightness("light.den_1", 255)
-    Lights.set_brightness("light.den_0", 255)
-    6500
-  end
+  # Default post-noon setting. Linearly down from 6500K to 3000K across 6 hours.
+  defp ticker(%{"rising" => false, "next_dusk" => nd}) when nd > 120 do
+    p = min(6, nd / 60) / 6
+    k = 3000 + trunc(3500 * p)
 
-  # Starting 3 hours from dusk (up until 1 hour), transition from 4500K to 3000K
-  # Also dim our other light.
-  defp ticker(%{"rising" => false, "next_dusk" => nd}) when nd > 60 and nd < 180 do
-    p = (nd - 60) / 120
-    k = 3000 + trunc(1500 * p)
     Lights.set_kelvin("light.den_1", k)
     Lights.set_brightness("light.den_0", trunc(255 * p))
     k
   end
 
-  # The hour before dusk, transition from 3000K down to 2000K
-  defp ticker(%{"rising" => false, "next_dusk" => nd}) when nd < 60 do
-    p = nd / 60
+  # The 2 hours before dusk, transition from 3000K down to 2000K
+  defp ticker(%{"rising" => false, "next_dusk" => nd}) when nd < 120 do
+    p = nd / 120
     k = 2000 + trunc(1000 * p)
     Lights.set_kelvin("light.den_1", k)
     Lights.set_brightness("light.den_0", 0)
     k
   end
 
+  # The hour before midnight, transition from 2000K to red.
   defp ticker(%{"rising" => false, "next_midnight" => nm}) when nm < 60 do
     # Kelvin 2000 = RGB [255, 136, 13]
     p = nm / 60
@@ -152,7 +145,7 @@ defmodule Mojodojo.Flux do
 
   # The hour leading up until "dawn". Transition from red to 2000.
   defp ticker(%{"rising" => true, "next_rising" => nr}) when nr < 60 do
-    p = 1.0 - (nr / 60)
+    p = 1.0 - nr / 60
     Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
     Lights.set_brightness("light.den_0", 0)
