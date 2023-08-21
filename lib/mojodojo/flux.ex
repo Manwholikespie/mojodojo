@@ -77,8 +77,8 @@ defmodule Mojodojo.Flux do
   end
 
   def sun() do
-    ss = HA.states("sun.sun")
-    sun_helper(ss)
+    HA.states("sun.sun")
+    |> sun_helper()
   end
 
   defp sun_helper(%{"attributes" => _} = ss) when is_map(ss) do
@@ -136,9 +136,9 @@ defmodule Mojodojo.Flux do
 
   # The hour before midnight, transition from 2000K to red.
   defp ticker(%{"rising" => false, "next_midnight" => nm}) when nm < 60 do
-    # Kelvin 2000 = RGB [255, 136, 13]
+    # Kelvin 2000 = RGB [255, 178, 67]
     p = nm / 60
-    Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
+    Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
     Lights.set_brightness("light.den_0", 0)
     2000
@@ -156,15 +156,14 @@ defmodule Mojodojo.Flux do
   # The hour leading up until "dawn". Transition from red to 2000.
   defp ticker(%{"rising" => true, "next_rising" => nr}) when nr <= 60 do
     p = 1.0 - nr / 60
-    Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
+    Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
     Lights.set_brightness("light.den_0", 0)
-    2500
+    2000
   end
 
-  # From dawn until noon. Linear transition from 2000K to 6500K at noon.
+  # From dawn-ish until noon. Linear transition from 2000K to 6500K at noon.
   defp ticker(%{"rising" => true, "next_rising" => nr, "next_noon" => nn}) when nr > nn do
-    # linearly across 5 hours til noon
     p = 1.0 - min(5, nn / 60) / 5
     k = 2000 + trunc(4500 * p)
     Lights.set_kelvin("light.den_1", k)
