@@ -115,7 +115,8 @@ defmodule Mojodojo.Flux do
   end
 
   # Default post-noon setting. Linearly down from 6500K to 3000K across 6 hours.
-  defp ticker(%{"rising" => false, "next_dusk" => nd}) when nd > 120 do
+  defp ticker(%{"rising" => false, "next_dusk" => nd, "next_midnight" => nm})
+       when nd > 120 and nd < nm do
     p = min(6, nd / 60) / 6
     k = 3000 + trunc(3500 * p)
 
@@ -143,8 +144,17 @@ defmodule Mojodojo.Flux do
     2000
   end
 
+  # Default early morning / before dawn
+  defp ticker(%{"rising" => true, "next_rising" => nr, "next_noon" => nn})
+       when nr > 60 and nr < nn do
+    Lights.set_rgb("light.den_1", 255, 0, 0)
+    Lights.set_brightness("light.den_1", 200)
+    Lights.set_brightness("light.den_0", 0)
+    2000
+  end
+
   # The hour leading up until "dawn". Transition from red to 2000.
-  defp ticker(%{"rising" => true, "next_rising" => nr}) when nr < 60 do
+  defp ticker(%{"rising" => true, "next_rising" => nr}) when nr <= 60 do
     p = 1.0 - nr / 60
     Lights.set_rgb("light.den_1", 255, trunc(136 * p), trunc(13 * p))
     Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
@@ -165,5 +175,6 @@ defmodule Mojodojo.Flux do
 
   defp ticker(%{"rising" => true} = sun) do
     Logger.error("This shouldn't be triggerable. Sun: #{sun |> inspect()}")
+    -1
   end
 end
