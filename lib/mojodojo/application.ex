@@ -16,7 +16,8 @@ defmodule Mojodojo.Application do
       MojodojoWeb.Endpoint,
       # Start a worker by calling: Mojodojo.Worker.start_link(arg)
       # {Mojodojo.Worker, arg}
-      Mojodojo.Flux
+      Mojodojo.Flux,
+      Mojodojo.Party
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

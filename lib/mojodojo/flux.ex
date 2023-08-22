@@ -121,6 +121,7 @@ defmodule Mojodojo.Flux do
     k = 3000 + trunc(3500 * p)
 
     Lights.set_kelvin("light.den_1", k)
+    Lights.set_brightness("light.den_1", 255)
     Lights.set_brightness("light.den_0", trunc(255 * p))
     k
   end
@@ -130,6 +131,7 @@ defmodule Mojodojo.Flux do
     p = nd / 120
     k = 2000 + trunc(1000 * p)
     Lights.set_kelvin("light.den_1", k)
+    Lights.set_brightness("light.den_1", 255)
     Lights.set_brightness("light.den_0", 0)
     k
   end
