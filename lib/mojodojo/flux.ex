@@ -7,6 +7,7 @@ defmodule Mojodojo.Flux do
   alias Mojodojo.HomeAssistant, as: HA
 
   @update_interval 2_000
+  @minutes_per_day 1440
 
   def start_link(args) do
     Logger.info("Starting F.lux Genserver...")
@@ -79,6 +80,7 @@ defmodule Mojodojo.Flux do
   def sun() do
     HA.states("sun.sun")
     |> sun_helper()
+    |> sun_helper_prev()
   end
 
   defp sun_helper(%{"attributes" => _} = ss) when is_map(ss) do
@@ -103,6 +105,14 @@ defmodule Mojodojo.Flux do
   # There is also a possibility we get %{"message" => "Entity not found."} on
   #   startup. Ignore.
   defp sun_helper(_), do: %{}
+
+  defp sun_helper_prev(attrs) do
+    attrs
+    |> Map.filter(fn {k,_v} -> String.starts_with?(k, "next_") end)
+    |> Enum.map(fn {"next_" <> k, v} -> {"prev_" <> k, @minutes_per_day - v} end)
+    |> Map.new()
+    |> Map.merge(attrs)
+  end
 
   def swag() do
     sun()
@@ -131,20 +141,30 @@ defmodule Mojodojo.Flux do
     p = nd / 120
     k = 2000 + trunc(1000 * p)
     Lights.set_kelvin("light.den_1", k)
-    Lights.set_brightness("light.den_1", 255)
+    Lights.set_brightness("light.den_1", 100 + trunc(155 * p))
     Lights.set_brightness("light.den_0", 0)
     k
   end
 
-  # The hour before midnight, transition from 2000K to red.
-  defp ticker(%{"rising" => false, "next_midnight" => nm}) when nm < 120 do
-    # Kelvin 2000 = RGB [255, 178, 67]
-    p = nm / 120
-    Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
-    Lights.set_brightness("light.den_1", 100 + trunc(155 * p))
+  # Default post-dusk setting
+  defp ticker(%{"rising" => false, "next_midnight" => nm}) when nm >= 180 do
+    Lights.set_kelvin("light.den_1", 2000)
+    Lights.set_brightness("light.den_1", 100)
     Lights.set_brightness("light.den_0", 0)
     2000
   end
+
+  # The 3 hours before midnight, transition from 2000K to red.
+  defp ticker(%{"rising" => false, "next_midnight" => nm}) when nm < 180 do
+    # Kelvin 2000 = RGB [255, 178, 67]
+    p = nm / 180
+    Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
+    Lights.set_brightness("light.den_1", 100)
+    Lights.set_brightness("light.den_0", 0)
+    2000
+  end
+
+  # ===== RISING true =====
 
   # Default early morning / before dawn
   defp ticker(%{"rising" => true, "next_rising" => nr, "next_noon" => nn})
