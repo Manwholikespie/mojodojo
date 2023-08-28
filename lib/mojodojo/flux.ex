@@ -124,10 +124,10 @@ defmodule Mojodojo.Flux do
     -1
   end
 
-  # Default post-noon setting. Linearly down from 6500K to 3000K across 6 hours.
+  # Default post-noon setting. Linearly down from 6500K to 3000K across 4 hours.
   defp ticker(%{"rising" => false, "next_dusk" => nd, "next_midnight" => nm})
-       when nd > 120 and nd < nm do
-    p = min(6, nd / 60) / 6
+       when nd >= 120 and nd < nm do
+    p = min(4, (nd - 120) / 60) / 4
     k = 3000 + trunc(3500 * p)
 
     Lights.set_kelvin("light.den_1", k)
