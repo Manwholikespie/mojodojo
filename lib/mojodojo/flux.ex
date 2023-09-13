@@ -141,7 +141,7 @@ defmodule Mojodojo.Flux do
     # Kelvin 2000 = RGB [255, 178, 67]
     p = nm / 60
     Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
-    Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
+    Lights.set_brightness("light.den_1", 1 + trunc(254 * p))
     Lights.set_brightness("light.den_0", 0)
     2000
   end
@@ -150,7 +150,7 @@ defmodule Mojodojo.Flux do
   defp ticker(%{"rising" => true, "next_rising" => nr, "next_noon" => nn})
        when nr > 60 and nr < nn do
     Lights.set_rgb("light.den_1", 255, 0, 0)
-    Lights.set_brightness("light.den_1", 200)
+    Lights.set_brightness("light.den_1", 1)
     Lights.set_brightness("light.den_0", 0)
     2000
   end
@@ -159,7 +159,7 @@ defmodule Mojodojo.Flux do
   defp ticker(%{"rising" => true, "next_rising" => nr}) when nr <= 60 do
     p = 1.0 - nr / 60
     Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
-    Lights.set_brightness("light.den_1", 200 + trunc(55 * p))
+    Lights.set_brightness("light.den_1", 1 + trunc(254 * p))
     Lights.set_brightness("light.den_0", 0)
     2000
   end
