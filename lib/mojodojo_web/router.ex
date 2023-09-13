@@ -11,5 +11,8 @@ defmodule MojodojoWeb.Router do
 
     get "/v1/flux", API.Manager, :flux_get
     post "/v1/flux", API.Manager, :flux_post
+
+    get "/v1/party", API.Manager, :party_get
+    post "/v1/party", API.Manager, :party_post
   end
 end
