@@ -10,7 +10,7 @@ _Originally this document was well written. Out of curiosity I passed it to GPT 
 2. **mojodojo_party**: 🎉💃 Ever wondered what magenta and cyan have in common? Me neither! But guess what, they're the VIPs at this party! Bounce between these two shades and let the party inside you awaken! (Warning: May bring out your inner disco star.⭐️)
 
 ## 🚨Alert! Read this if you're a customization junkie! 🚨
-I'm rocking an RGBWW light strip that's split into two personas: Mr. RGB (`den.light_0`) and the always subtle Mrs. Dimmable (`den.light_1`). If your lights have different names or vibes, give the code a little makeover! 💄👠
+I'm rocking an RGBWW light strip that's split into two personas: Mr. RGB (`den.light_1`) and the always subtle Mrs. Dimmable (`den.light_0`). If your lights have different names or vibes, give the code a little makeover! 💄👠
 
 Now, go sprinkle some MojoDojo magic onto your lights! And if you find joy in this little creation of mine, send some virtual hugs! 🤗🌈 Stay luminous, peeps! 💖🦄🔮🌠🎈
 
