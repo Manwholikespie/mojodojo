@@ -159,7 +159,7 @@ defmodule Mojodojo.Flux do
     # Kelvin 2000 = RGB [255, 178, 67]
     p = nm / 180
     Lights.set_rgb("light.den_1", 255, trunc(178 * p), trunc(67 * p))
-    Lights.set_brightness("light.den_1", 1 + trunc(254 * p))
+    Lights.set_brightness("light.den_1", 1 + trunc(99 * p))
     Lights.set_brightness("light.den_0", 0)
     2000
   end
