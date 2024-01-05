@@ -18,7 +18,7 @@ Now, go sprinkle some MojoDojo magic onto your lights! And if you find joy in th
 
 Create `config/config.secret.exs` with the following
 
-```
+```elixir
 import Config
 
 config :mojodojo,
@@ -33,7 +33,7 @@ config :mojodojo, MojodojoWeb.Endpoint,
 
 Go in your Home Assistant configuration.yaml and configure the following. It's important to change the Authorization to "Bearer " + whatever your mojodojo `:api_key` value is.
 
-```
+```elixir
 switch:
   - platform: rest
     name: mojodojo_flux
